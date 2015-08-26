@@ -13,8 +13,6 @@ import com.itsmeolivia.recommendations.model.ActiveListings;
 import com.itsmeolivia.recommendations.model.Listing;
 import com.squareup.picasso.Picasso;
 
-import java.util.concurrent.Callable;
-
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;

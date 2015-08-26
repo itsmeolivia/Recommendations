@@ -32,6 +32,6 @@ public class Etsy {
     }
 
     public static void getActiveListings(Callback<ActiveListings> callback) {
-        getApi().activeListings("Images, Shop", callback);
+        getApi().activeListings("Images,Shop", callback);
     }
 }
