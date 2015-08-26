@@ -3,16 +3,23 @@ package com.itsmeolivia.recommendations;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.itsmeolivia.recommendations.api.Etsy;
+import com.itsmeolivia.recommendations.model.ActiveListings;
+
 public class MainActivity extends ActionBarActivity {
+
+    private static final String STATE_ACTIVE_LISTINGS = "StateActiveListings";
 
     private RecyclerView mRecyclerView;
     private View mProgressBar;
     private TextView mErrorView;
+    private ListingAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,9 +31,37 @@ public class MainActivity extends ActionBarActivity {
         mErrorView = (TextView) findViewById(R.id.error_view);
 
         //setup recycler view
-        
+        mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
 
-        showLoading();
+        mAdapter = new ListingAdapter(this);
+        mRecyclerView.setAdapter(mAdapter);
+
+        if (savedInstanceState == null) {
+            showLoading();
+            Etsy.getActiveListings(mAdapter);
+        }
+
+        else {
+            if (savedInstanceState.containsKey(STATE_ACTIVE_LISTINGS)) {
+                mAdapter.success((ActiveListings) savedInstanceState.getParcelable(STATE_ACTIVE_LISTINGS), null);
+                showList();
+            }
+            else {
+                showLoading();
+                Etsy.getActiveListings(mAdapter);
+            }
+        }
+
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        ActiveListings activeListings = mAdapter.getActiveListings();
+        if (activeListings != null) {
+            outState.putParcelable(STATE_ACTIVE_LISTINGS, activeListings);
+        }
     }
 
     @Override
