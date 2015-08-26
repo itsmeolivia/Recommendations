@@ -11,11 +11,19 @@ import android.widget.TextView;
 
 import com.itsmeolivia.recommendations.model.ActiveListings;
 import com.itsmeolivia.recommendations.model.Listing;
+import com.squareup.picasso.Picasso;
+
+import java.util.concurrent.Callable;
+
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 /**
  * Created by olivia on 8/10/15.
  */
-public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingHolder> {
+public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingHolder>
+implements Callback<ActiveListings> {
 
     private LayoutInflater mInflater;
     private ActiveListings mActiveListings;
@@ -33,7 +41,13 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingH
     @Override
     public void onBindViewHolder(ListingHolder listingHolder, int i) {
         final Listing listing = mActiveListings.results[i];
-        
+        listingHolder.mTitleView.setText(listing.title);
+        listingHolder.mPriceView.setText(listing.price);
+        listingHolder.mShopNameView.setText(listing.Shop.shop_name);
+
+        Picasso.with(listingHolder.mImageView.getContext())
+                .load(listing.Images[0].url_570xN)
+                .into(listingHolder.mImageView);
 
     }
 
@@ -42,6 +56,17 @@ public class ListingAdapter extends RecyclerView.Adapter<ListingAdapter.ListingH
         if (mActiveListings == null || mActiveListings.results == null)
             return 0;
         return mActiveListings.results.length;
+    }
+
+    @Override
+    public void success(ActiveListings activeListings, Response response) {
+        this.mActiveListings = activeListings;
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void failure(RetrofitError error) {
+
     }
 
     public class ListingHolder extends RecyclerView.ViewHolder {
