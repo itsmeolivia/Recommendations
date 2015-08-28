@@ -23,15 +23,18 @@ public class Etsy {
     }
 
     private static Api getApi() {
-        return new RestAdapter.Builder()
+
+        Api api = new RestAdapter.Builder()
                 .setEndpoint("https://openapi.etsy.com/v2")
                 .setRequestInterceptor(getInterceptor())
                 .build()
                 .create(Api.class);
 
+        return api;
+
     }
 
     public static void getActiveListings(Callback<ActiveListings> callback) {
-        getApi().activeListings("Images,Shop", callback);
+        getApi().activeListings("Shop,Images", callback);
     }
 }

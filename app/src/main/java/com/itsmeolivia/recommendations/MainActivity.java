@@ -1,9 +1,13 @@
 package com.itsmeolivia.recommendations;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,10 +15,20 @@ import android.widget.TextView;
 
 import com.itsmeolivia.recommendations.api.Etsy;
 import com.itsmeolivia.recommendations.model.ActiveListings;
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
+import org.json.JSONException;
+
+import java.io.IOException;
 
 public class MainActivity extends ActionBarActivity {
 
     private static final String STATE_ACTIVE_LISTINGS = "StateActiveListings";
+    public static final String TAG = MainActivity.class.getSimpleName();
 
     private RecyclerView mRecyclerView;
     private View mProgressBar;
@@ -32,11 +46,13 @@ public class MainActivity extends ActionBarActivity {
 
         //setup recycler view
         mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL));
-
         mAdapter = new ListingAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
 
+        System.out.println("on create");
+
         if (savedInstanceState == null) {
+            System.out.println("if loop");
             showLoading();
             Etsy.getActiveListings(mAdapter);
         }
@@ -55,35 +71,73 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        ActiveListings activeListings = mAdapter.getActiveListings();
-        if (activeListings != null) {
-            outState.putParcelable(STATE_ACTIVE_LISTINGS, activeListings);
+    private void getData() {
+        String api_key = "m7bp7m88i1rcqcbhrr0fben6";
+        String etsyUrl = "https://openapi.etsy.com/v2/listings/active?includes=Shop,Images&api_key=" + api_key;
+
+        if (isNetworkAvailable()) {
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url(etsyUrl)
+                    .build();
+
+            Call call = client.newCall(request);
+            call.enqueue(new Callback() {
+                @Override
+                public void onFailure(Request request, IOException e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showLoading();
+                        }
+                    });
+                    showError();
+
+                }
+
+                @Override
+                public void onResponse(Response response) throws IOException {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showLoading();
+                        }
+                    });
+
+                    try{
+                        String jsonData = response.body().string();
+
+                        if (response.isSuccessful()) {
+
+                        }
+
+                        else {
+
+                        }
+                    }
+                    catch (IOException e) {
+                        Log.e(TAG, "Exception caught: ", e);
+                    }
+                    catch (JSONException e) {
+                        Log.e(TAG, "Exception caught: ", e);
+                    }
+                }
+            });
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+    private boolean isNetworkAvailable() {
+        ConnectivityManager manager = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        boolean isAvailable = false;
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (networkInfo != null && networkInfo.isConnected()) {
+            isAvailable = true;
         }
 
-        return super.onOptionsItemSelected(item);
+        return isAvailable;
     }
 
     public void showLoading() {
