@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.itsmeolivia.recommendations.api.Etsy;
 import com.itsmeolivia.recommendations.model.ActiveListings;
+import com.itsmeolivia.recommendations.model.Listing;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
@@ -22,6 +23,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -34,6 +36,8 @@ public class MainActivity extends ActionBarActivity {
     private View mProgressBar;
     private TextView mErrorView;
     private ListingAdapter mAdapter;
+
+    private Listing mListing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +113,8 @@ public class MainActivity extends ActionBarActivity {
 
                         if (response.isSuccessful()) {
 
+                            mListing = getListingDetails(jsonData);
+
                         }
 
                         else {
@@ -157,5 +163,23 @@ public class MainActivity extends ActionBarActivity {
         mProgressBar.setVisibility(View.GONE);
         mRecyclerView.setVisibility(View.GONE);
         mErrorView.setVisibility(View.VISIBLE);
+    }
+
+    private Listing getListingDetails(String jsonData) throws JSONException{
+        Listing listing = new Listing();
+        listing.setDescription(jsonData);
+        listing.setImages(jsonData);
+        listing.setListing_id(jsonData);
+        listing.setPrice(jsonData);
+        listing.setUrl(jsonData);
+        listing.setTitle(jsonData);
+        listing.setShop(jsonData);
+
+        return listing;
+    }
+
+    private String getDescription(String jsonData) throws JSONException{
+        JSONObject list_detail = new JSONObject(jsonData);
+
     }
 }

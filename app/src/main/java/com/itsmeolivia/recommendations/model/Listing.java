@@ -13,6 +13,62 @@ public class Listing implements Parcelable {
     public Shop Shop;
     public Image[] Images;
 
+    public int getListing_id() {
+        return listing_id;
+    }
+
+    public void setListing_id(int listing_id) {
+        this.listing_id = listing_id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public Shop getShop() {
+        return Shop;
+    }
+
+    public void setShop(com.itsmeolivia.recommendations.model.Shop shop) {
+        Shop = shop;
+    }
+
+    public Image[] getImages() {
+        return Images;
+    }
+
+    public void setImages(Image[] images) {
+        Images = images;
+    }
+
     @Override
     public int describeContents() {
         return 0;
