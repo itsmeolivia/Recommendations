@@ -1,6 +1,7 @@
 package com.itsmeolivia.recommendations.google;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
 
@@ -85,6 +86,17 @@ public class GoogleServicesHelper implements GoogleApiClient.ConnectionCallbacks
         }
         else {
             mListener.onDisconnected();
+        }
+    }
+
+    public void handleActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_RESOLUTION || requestCode == REQUEST_CODE_AVAILABLITY) {
+            if (resultCode == Activity.RESULT_OK) {
+                connect();
+            }
+            else {
+                mListener.onDisconnected();
+            }
         }
     }
 
